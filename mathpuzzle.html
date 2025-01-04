@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Math Puzzle Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .game-container {
+      margin: 0 auto;
+      max-width: 400px;
+      border: 2px solid #333;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .score-timer {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Math Puzzle Game</h1>
+    <div class="score-timer">
+      <div>Score: <span id="score">0</span></div>
+      <div>Time: <span id="timer">30</span> seconds</div>
+    </div>
+    <div>
+      <p id="problem">Ready?</p>
+      <input type="number" id="answer" placeholder="Your Answer" />
+      <button id="submit">Submit</button>
+    </div>
+    <div>
+      <label for="difficulty">Difficulty:</label>
+      <select id="difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+      <button id="start">Start Game</button>
+    </div>
+  </div>
+
+  <script>
+    let score = 0;
+    let timeLeft = 30;
+    let timerInterval;
+    let currentProblem = {};
+    let difficulty = "easy";
+
+    const scoreEl = document.getElementById("score");
+    const timerEl = document.getElementById("timer");
+    const problemEl = document.getElementById("problem");
+    const answerEl = document.getElementById("answer");
+    const submitBtn = document.getElementById("submit");
+    const startBtn = document.getElementById("start");
+    const difficultySelect = document.getElementById("difficulty");
+
+    function generateProblem() {
+      let num1, num2, operator;
+      switch (difficulty) {
+        case "easy":
+          num1 = Math.floor(Math.random() * 10) + 1;
+          num2 = Math.floor(Math.random() * 10) + 1;
+          break;
+        case "medium":
+          num1 = Math.floor(Math.random() * 50) + 1;
+          num2 = Math.floor(Math.random() * 50) + 1;
+          break;
+        case "hard":
+          num1 = Math.floor(Math.random() * 100) + 1;
+          num2 = Math.floor(Math.random() * 100) + 1;
+          break;
+      }
+      const operators = ["+", "-", "*"];
+      operator = operators[Math.floor(Math.random() * operators.length)];
+      currentProblem = {
+        num1,
+        num2,
+        operator,
+        answer: eval(`${num1} ${operator} ${num2}`),
+      };
+      problemEl.textContent = `${num1} ${operator} ${num2}`;
+    }
+
+    function startGame() {
+      score = 0;
+      timeLeft = 30;
+      scoreEl.textContent = score;
+      timerEl.textContent = timeLeft;
+      difficulty = difficultySelect.value;
+      generateProblem();
+      answerEl.value = "";
+      answerEl.disabled = false;
+      submitBtn.disabled = false;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function checkAnswer() {
+      const userAnswer = parseInt(answerEl.value, 10);
+      if (userAnswer === currentProblem.answer) {
+        score++;
+        scoreEl.textContent = score;
+        generateProblem();
+        answerEl.value = "";
+      }
+    }
+
+    function endGame() {
+      problemEl.textContent = "Game Over! Final Score: " + score;
+      answerEl.disabled = true;
+      submitBtn.disabled = true;
+    }
+
+    submitBtn.addEventListener("click", checkAnswer);
+    startBtn.addEventListener("click", startGame);
+    answerEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        checkAnswer();
+      }
+    });
+  </script>
+</body>
+</html>
