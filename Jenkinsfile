@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/jyothi-surya/currency_converter.git'
+                git credentialsId: 'github-token', url: 'https://github.com/jyothi-surya/webdevlopment.git'
             }
         }
 
